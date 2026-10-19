@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tiệm Sách Tri Thức - Đồ Án Website</title>
+    <!-- CSS & FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Top Navigation Role Switcher (Admin / Customer Mode) -->
+    <div class="role-switcher">
+        <div class="switcher-info">
+            <span class="status-dot"></span>
+            <span>Hệ Thống Đồ Án Website (PostgreSQL Simulation + CRUD)</span>
+        </div>
+        <div class="switcher-buttons">
+            <span>Chế độ xem:</span>
+            <button onclick="switchMode('store')" id="btn-mode-store" class="btn-mode active">
+                <i class="fa-solid fa-store"></i> Khách Mua Hàng
+            </button>
+            <button onclick="switchMode('admin')" id="btn-mode-admin" class="btn-mode">
+                <i class="fa-solid fa-user-shield"></i> Quản Trị (Admin)
+            </button>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- GIAO DIỆN KHÁCH HÀNG (STOREFRONT VIEW)                   -->
+    <!-- ========================================================= -->
+    <div id="store-view" class="view-container">
+        <!-- Header -->
+        <header class="site-header">
+            <div class="header-container">
+                <a href="#" onclick="showPage('home')" class="logo">
+                    <i class="fa-solid fa-book-open-reader"></i>
+                    <div>
+                        <span class="logo-text">TRI THỨC</span>
+                        <span class="logo-sub">Cửa Hàng Sách Trực Tuyến</span>
+                    </div>
+                </a>
+
+                <!-- Thanh tìm kiếm -->
+                <div class="search-box">
+                    <input type="text" id="store-search-input" onkeyup="handleSearch()" placeholder="Tìm kiếm truyện, sách, đồ dùng...">
+                    <button><i class="fa-solid fa-magnifying-glass"></i></button>
+                </div>
+
+                <!-- Điều hướng & Giỏ hàng -->
+                <nav class="nav-links">
+                    <button onclick="showPage('home')">Trang Chủ</button>
+                    <button onclick="showPage('contact')">Liên Hệ</button>
+                    <button onclick="openCartModal()" class="btn-cart">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                        <span class="cart-text">Giỏ Hàng</span>
+                        <span id="cart-badge" class="badge">0</span>
+                    </button>
+                </nav>
+            </div>
+        </header>
+
+        <!-- Main Content Dynamic Pages -->
+        <main class="main-content">
+            <!-- PAGE 1: TRANG CHỦ -->
+            <div id="page-home">
+                <!-- Hero Section với Video Background -->
+                <section class="hero">
+                    <video autoplay muted loop playsinline class="video-bg">
+                        <source src="IMG/video.mp4" type="video/mp4">
+                    </video>
+                    <div class="hero-overlay"></div>
+                    
+                    <div class="hero-content">
+                        <h1>TIỆM SÁCH TRI THỨC</h1>
+                        <p>Khám phá kho tàng tri thức, truyện tranh hấp dẫn và đồ dùng học tập chất lượng cao với giá ưu đãi nhất.</p>
+
+                        <div class="category-menu">
+                            <button onclick="filterCategory('ALL')" class="cat-btn">Tất Cả</button>
+                            <button onclick="filterCategory('TRUYEN')" class="cat-btn">Truyện Cười & Kinh Dị</button>
+                            <button onclick="filterCategory('SACH')" class="cat-btn">Sách Hay Nên Đọc</button>
+                            <button onclick="filterCategory('DODUNG')" class="cat-btn">Đồ Dùng Học Tập</button>
+                        </div>
+
+                        <!-- Đếm ngược Flash Sale -->
+                        <div class="flash-sale-box">
+                            <div class="flash-title">⚡ FLASH SALE KẾT THÚC SAU</div>
+                            <div id="countdown" class="timer">
+                                <span id="hours">02</span>:<span id="minutes">45</span>:<span id="seconds">00</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section Hiển thị danh sách sản phẩm -->
+                <section class="products-section">
+                    <div class="section-header">
+                        <h2 id="section-title" class="row-title">Tất Cả Sản Phẩm</h2>
+                        <span id="product-count" class="product-count">Hiển thị 0 sản phẩm</span>
+                    </div>
+
+                    <div id="products-grid" class="products-grid">
+                        <!-- Sản phẩm Render bằng JS -->
+                    </div>
+                </section>
+            </div>
+
+            <!-- PAGE 2: TRANG LIÊN HỆ -->
+            <div id="page-contact" class="contact-page hidden">
+                <div class="contact-card">
+                    <div class="contact-info">
+                        <h3>TIỆM SÁCH TRI THỨC</h3>
+                        <p>Chúng tôi luôn lắng nghe ý kiến đóng góp của Quý khách hàng để nâng cao chất lượng dịch vụ.</p>
+                        <ul class="info-list">
+                            <li><i class="fa-solid fa-location-dot"></i> 38A Đường Lĩnh Nam, Hà Nội</li>
+                            <li><i class="fa-solid fa-phone"></i> Hotline: 034 717 5785</li>
+                            <li><i class="fa-solid fa-envelope"></i> Email: hotro@nguyenducuong.com</li>
+                        </ul>
+                        <div class="copyright-text">&copy; 2026 Bản quyền thuộc về Nguyen Duc Luong.</div>
+                    </div>
+                    <div class="contact-form-container">
+                        <h3>Gửi Phản Hồi / Liên Hệ</h3>
+                        <form onsubmit="handleContactSubmit(event)" class="contact-form">
+                            <div class="form-group">
+                                <label>Họ và Tên</label>
+                                <input type="text" required class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="email" required class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Nội Dung Liên Hệ</label>
+                                <textarea rows="4" required class="form-control"></textarea>
+                            </div>
+                            <button type="submit" class="btn-submit">Gửi Tin Nhắn</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="site-footer">
+            <div class="footer-container">
+                <div class="footer-col">
+                    <h4>TIỆM SÁCH TRI THỨC</h4>
+                    <p>Chuyên cung cấp các loại sách giáo khoa, truyện tranh, tiểu thuyết và đồ dùng học tập chất lượng cao cho sinh viên và độc giả toàn quốc.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>LIÊN HỆ TRỰC TIẾP</h4>
+                    <p><i class="fa-solid fa-location-dot"></i> 38A Đường Lĩnh Nam, Hà Nội</p>
+                    <p><i class="fa-solid fa-phone"></i> Hotline: 034 717 5785</p>
+                    <p><i class="fa-solid fa-envelope"></i> Email: hotro@Nguyenducuong.com</p>
+                </div>
+                <div class="footer-col">
+                    <h4>THÔNG TIN ĐỒ ÁN</h4>
+                    <p>Đồ án Lập trình Web - Sinh viên thực hiện.</p>
+                    <p>Kết nối cơ sở dữ liệu (PostgreSQL - CRUD storage).</p>
+                </div>
+            </div>
+            <div class="footer-bottom">&copy; 2026 Bản quyền thuộc về Nguyen Duc Luong. All rights reserved.</div>
+        </footer>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- GIAO DIỆN QUẢN TRỊ (ADMIN DASHBOARD VIEW)                -->
+    <!-- ========================================================= -->
+    <div id="admin-view" class="view-container admin-theme hidden">
+        <header class="admin-header">
+            <div class="admin-header-title">
+                <i class="fa-solid fa-gears"></i>
+                <h1>Trang Quản Trị Hệ Thống (Admin Panel)</h1>
+            </div>
+            <button onclick="openProductModal()" class="btn-add-product">
+                <i class="fa-solid fa-plus"></i> Thêm Sản Phẩm Mới
+            </button>
+        </header>
+
+        <main class="admin-main">
+            <!-- Tabs Navigation -->
+            <div class="admin-tabs">
+                <button onclick="switchAdminTab('products')" id="admin-tab-products" class="tab-btn active">
+                    <i class="fa-solid fa-boxes-stacked"></i> Quản Lý Sản Phẩm (CRUD)
+                </button>
+                <button onclick="switchAdminTab('orders')" id="admin-tab-orders" class="tab-btn">
+                    <i class="fa-solid fa-receipt"></i> Danh Sách Đơn Hàng (<span id="admin-orders-count">0</span>)
+                </button>
+            </div>
+
+            <!-- TAB 1: Quản lý sản phẩm -->
+            <div id="admin-sec-products" class="admin-card">
+                <div class="table-responsive">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Hình ảnh</th>
+                                <th>Tên sản phẩm</th>
+                                <th>Danh mục</th>
+                                <th>Giá gốc</th>
+                                <th>Giá bán</th>
+                                <th style="text-align: center;">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-products-table">
+                            <!-- Render bằng JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB 2: Quản lý đơn hàng -->
+            <div id="admin-sec-orders" class="admin-card hidden">
+                <div id="admin-orders-list" class="orders-list">
+                    <!-- Render bằng JS -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- MODALS & POPUPS                                           -->
+    <!-- ========================================================= -->
+
+    <!-- POPUP QUẢNG CÁO -->
+    <div id="adPopup" class="modal-overlay hidden" onclick="togglePopup(false)">
+        <div class="popup-box" onclick="event.stopPropagation()">
+            <button type="button" onclick="togglePopup(false)" class="close-popup-btn">&times;</button>
+            <div class="ad-placeholder">
+                <img src="IMG/q1.jpg" alt="Flash Sale Promo" onerror="this.src='https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?q=80&w=600'">
+            </div>
+            <h3 class="popup-title">⚡ FLASH SALE GIẢM 50%</h3>
+            <p class="popup-desc">Cơ hội mua sách & đồ dùng học tập giá rẻ nhất trong năm!</p>
+            <button type="button" onclick="togglePopup(false); filterCategory('ALL');" class="btn-buy-now">MUA NGAY</button>
+        </div>
+    </div>
+
+    <!-- CHI TIẾT SẢN PHẨM MODAL -->
+    <div id="detailModal" class="modal-overlay hidden">
+        <div class="modal-card flex-row">
+            <button onclick="closeDetailModal()" class="close-modal">&times;</button>
+            <div class="modal-media">
+                <img id="modal-img" src="" alt="Product Image">
+            </div>
+            <div class="modal-details">
+                <div>
+                    <span id="modal-cat" class="cat-badge">DANH MỤC</span>
+                    <h2 id="modal-title">Tên sản phẩm</h2>
+                    <div id="modal-stars" class="stars">⭐⭐⭐⭐⭐</div>
+                    <div class="price-box">
+                        <span id="modal-price" class="current-price">0đ</span>
+                        <span id="modal-oldprice" class="old-price">0đ</span>
+                    </div>
+                    <p id="modal-desc" class="desc-text">Mô tả sản phẩm...</p>
+                </div>
+                <div class="modal-actions">
+                    <div class="qty-picker">
+                        <label>Số lượng:</label>
+                        <input type="number" id="modal-qty" value="1" min="1" max="99">
+                    </div>
+                    <button onclick="addCurrentModalToCart()" class="btn-add-cart">
+                        <i class="fa-solid fa-cart-plus"></i> Thêm Vào Giỏ Hàng
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- GIỎ HÀNG & THANH TOÁN MODAL -->
+    <div id="cartModal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-cart-shopping"></i> Giỏ Hàng Của Bạn</h3>
+                <button onclick="closeCartModal()" class="close-modal-inline">&times;</button>
+            </div>
+
+            <div id="cart-items-container" class="cart-items-list">
+                <!-- Render bằng JS -->
+            </div>
+
+            <div class="cart-summary">
+                <div class="cart-total">
+                    <span>Tổng Tiền Thanh Toán:</span>
+                    <span id="cart-total-price" class="total-price">0đ</span>
+                </div>
+
+                <form onsubmit="handleCheckout(event)" class="checkout-form">
+                    <input type="text" id="cust-name" required placeholder="Họ và tên người nhận" class="form-control">
+                    <input type="tel" id="cust-phone" required placeholder="Số điện thoại liên hệ" class="form-control">
+                    <input type="text" id="cust-address" required placeholder="Địa chỉ giao hàng đầy đủ" class="form-control">
+                    <button type="submit" class="btn-checkout">XÁC NHẬN ĐẶT HÀNG</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL THÊM / SỬA SẢN PHẨM (ADMIN CRUD) -->
+    <div id="adminProductModal" class="modal-overlay hidden">
+        <div class="modal-card admin-form-card">
+            <button onclick="closeProductModal()" class="close-modal">&times;</button>
+            <h3 id="admin-modal-title">Thêm Sản Phẩm Mới</h3>
+            
+            <form onsubmit="handleSaveProduct(event)" class="admin-form">
+                <input type="hidden" id="prod-id">
+                <div class="form-group">
+                    <label>Tên sản phẩm *</label>
+                    <input type="text" id="prod-title" required class="form-control dark">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Danh mục *</label>
+                        <select id="prod-category" required class="form-control dark">
+                            <option value="TRUYEN">Truyện Cười & Kinh Dị</option>
+                            <option value="SACH">Sách Hay Nên Đọc</option>
+                            <option value="DODUNG">Đồ Dùng Học Tập</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Đánh giá (Số sao 1-5)</label>
+                        <input type="number" id="prod-rating" min="1" max="5" value="5" class="form-control dark">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Giá gốc (đ)</label>
+                        <input type="number" id="prod-oldprice" required class="form-control dark">
+                    </div>
+                    <div class="form-group">
+                        <label>Giá khuyến mãi (đ) *</label>
+                        <input type="number" id="prod-price" required class="form-control dark">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Hình ảnh (Ví dụ: IMG/t1.jpg)</label>
+                    <input type="text" id="prod-image" required placeholder="IMG/t1.jpg" class="form-control dark">
+                </div>
+                <div class="form-group">
+                    <label>Mô tả sản phẩm</label>
+                    <textarea id="prod-desc" rows="3" class="form-control dark"></textarea>
+                </div>
+                <button type="submit" class="btn-save">LƯU DỮ LIỆU CSDL</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast" class="toast">
+        <i id="toast-icon" class="fa-solid fa-circle-check"></i>
+        <span id="toast-msg">Thông báo</span>
+    </div>
+
+    <!-- Script File -->
+    <script src="script.js"></script>
+</body>
+</html>
